@@ -4,7 +4,14 @@ services:
   drf: 
     build:
       context: .
-      container_name: drf
+    environment:
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - DEBUG=1
+      - SHIPPING_COSTS_URL=https://random.api.randomkey.io/v1/double
+      - SHIPPING_COSTS_KEY=96aac0784de8fc3aed39c0daffc5f8ed
+      - REDIS_DB=0
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - redis
     ports:
