@@ -1,3 +1,9 @@
+import redis
+import requests
+from datetime import timedelta
+
+from django.conf import settings
+
 from api.models import Order, Quantity
 
 
@@ -18,10 +24,32 @@ class OrderService:
 
         return instance
 
+    def _get_shipping_costs(self):
+        try:
+            redis_client = redis.Redis(
+                host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
+            shipping_costs = redis_client.get('shipping_costs')
+
+            if shipping_costs is None:
+                headers = {'auth': settings.SHIPPING_COSTS_KEY,
+                           'Content-Type': 'application/json'}
+                body = {'min': 1.00, 'max': 100.00, 'records': 1}
+                shipping_costs = requests.post(
+                    settings.SHIPPING_COSTS_URL, json=body, headers=headers).json().get('number')
+                redis_client.set('shipping_costs', shipping_costs)
+                redis_client.expire('shipping_costs', timedelta(hours=1))
+
+            return float(shipping_costs)
+        except Exception as e:
+            print(e)
+            return 0.0
+
     def _update_instance_related(self, validated_data, instance=None):
         products_data = validated_data.pop('order_to_product', [])
-        instance = instance if instance else Order.objects.create(
-            **validated_data)
+        if not instance:
+            shipping_costs = self._get_shipping_costs()
+            validated_data['shipping_costs'] = shipping_costs
+            instance = Order.objects.create(**validated_data)
         quantities = []
 
         for product_data in products_data:
