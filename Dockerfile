@@ -1,4 +1,4 @@
-FROM python:3.9.7-alpine
+FROM python:3.9.7
 
 ENV PYTHONUNBUFFERED 1
 
@@ -9,5 +9,4 @@ RUN mkdir /app
 WORKDIR /app
 COPY . /app/
 
-RUN adduser -D user
-USER user
+RUN apt-get update && apt-get install -y build-essential redis-server
