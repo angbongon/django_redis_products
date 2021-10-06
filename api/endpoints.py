@@ -9,5 +9,5 @@ router.register(r"products", views.ProductViewSet, basename='products')
 
 urlpatterns = [
     path(r"", include(router.urls)),
-    #path(r"/auth/", include("rest_auth.urls")),
+    path(r"auth/", include("rest_auth.urls")),
 ]
