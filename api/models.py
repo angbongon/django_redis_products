@@ -13,7 +13,7 @@ User = get_user_model()
 class Product(models.Model):
     name = CharField('Name', max_length=250)
     price = DecimalField('Price', max_digits=10, decimal_places=2)
-    description = TextField('Description')
+    description = TextField('Description', null=True, blank=True)
 
     class Meta:
         ordering = ['name', 'price']
@@ -26,7 +26,8 @@ class Order(models.Model):
     shipping_costs = DecimalField(
         'Shipping costs', max_digits=10, decimal_places=2, default=0.00)
 
-    user = models.ForeignKey(User, related_name='orders', on_delete=CASCADE)
+    user = models.ForeignKey(User, related_name='orders',
+                             editable=False, on_delete=CASCADE)
     products = models.ManyToManyField(
         Product, through='Quantity', related_name='orders', blank=True)
 
