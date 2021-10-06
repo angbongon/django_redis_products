@@ -33,8 +33,8 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 INSTALLED_APPS = [
     'api',
     'rest_framework',
-    'rest_framework_swagger',
     'rest_auth',
+    'drf_yasg',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
