@@ -27,6 +27,7 @@ class QuantityCreateOrUpdateSerializer(serializers.ModelSerializer):
 class OrderDefaultSerializer(serializers.ModelSerializer):
     products = QuantityDefaultSerializer(
         many=True, source='order_to_product', read_only=True)
+    user = serializers.SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
         model = models.Order
@@ -36,12 +37,15 @@ class OrderDefaultSerializer(serializers.ModelSerializer):
 class OrderCreateOrUpdateSerializer(serializers.ModelSerializer):
     products = QuantityCreateOrUpdateSerializer(
         many=True, source='order_to_product')
+    user = serializers.SlugRelatedField(slug_field='username', read_only=True)
 
     class Meta:
         model = models.Order
         fields = '__all__'
 
     def create(self, validated_data):
+        current_user = self.context.get('request', None).user
+        validated_data['user'] = current_user
         return OrderService().create(validated_data)
 
     def update(self, instance, validated_data):
