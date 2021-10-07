@@ -42,6 +42,7 @@ class OrderCreateOrUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
         fields = '__all__'
+        read_only_fields = ['total_price', 'shipping_costs']
 
     def create(self, validated_data):
         current_user = self.context.get('request', None).user
