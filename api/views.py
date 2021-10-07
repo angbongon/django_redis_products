@@ -1,3 +1,8 @@
+from django.conf import settings
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
+
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
@@ -28,10 +33,17 @@ class OrderViewSet(viewsets.ModelViewSet):
     """
     permission_classes = [IsAuthenticated, OrderPermission]
 
+    @method_decorator(vary_on_cookie)
+    @method_decorator(cache_page(settings.REDIS_DEFAULT_TTL))
+    def dispatch(self, *args, **kwargs):
+        return super(OrderViewSet, self).dispatch(*args, **kwargs)
+
     def get_queryset(self):
         current_user = self.request.user
+
         if current_user.is_superuser:
             return Order.objects.all()
+
         return Order.objects.filter(user=current_user)
 
     def get_serializer_class(self):
@@ -60,5 +72,10 @@ class ProductViewSet(viewsets.ModelViewSet):
     update:
         Update an product.
     """
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+
+    @method_decorator(vary_on_cookie)
+    @method_decorator(cache_page(settings.REDIS_DEFAULT_TTL))
+    def dispatch(self, *args, **kwargs):
+        return super(ProductViewSet, self).dispatch(*args, **kwargs)
