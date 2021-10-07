@@ -9,15 +9,15 @@ from drf_yasg.views import get_schema_view
 from api import views
 
 router = DefaultRouter()
-router.register(r"orders", views.OrderViewSet, basename='orders')
-router.register(r"products", views.ProductViewSet, basename='products')
+router.register(r'orders', views.OrderViewSet, basename='orders')
+router.register(r'products', views.ProductViewSet, basename='products')
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Django Products API",
+        title='Django Products API',
         default_version='v1',
-        description="Django Products API docs",
-        contact=openapi.Contact(email="angbonillagonzalez@gmail.com"),
+        description='Django Products API docs',
+        contact=openapi.Contact(email='angbonillagonzalez@gmail.com'),
     ),
     public=True,
     permission_classes=[permissions.AllowAny],
