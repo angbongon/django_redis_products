@@ -2,6 +2,8 @@
 ## Introduction
 This is a small dockerized API service designed using Django, Django REST Framework, a Redis cache database and Sqlite database. Its purpouse is to manage products and orders.
 
+## Data model
+<img src="./products.svg">
 ## Structure
 Like most Django projects this one has a project package, called **products/**, and an app where the API has been implemented, in the package **api/**. 
 Inside **api/** we have the:
