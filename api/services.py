@@ -34,32 +34,45 @@ class OrderService:
                 headers = {'auth': settings.SHIPPING_COSTS_KEY,
                            'Content-Type': 'application/json'}
                 body = {'min': 1.00, 'max': 100.00, 'records': 1}
+
                 shipping_costs = requests.post(
                     settings.SHIPPING_COSTS_URL, json=body, headers=headers).json().get('number')
+
                 redis_client.set('shipping_costs', shipping_costs)
-                redis_client.expire('shipping_costs', timedelta(hours=1))
+                redis_client.expire('shipping_costs', timedelta(
+                    seconds=60))
 
             return float(shipping_costs)
-        except Exception as e:
-            print(e)
+        except:
             return 0.0
 
     def _update_instance_related(self, validated_data, instance=None):
         products_data = validated_data.pop('order_to_product', [])
+
         if not instance:
             shipping_costs = self._get_shipping_costs()
             validated_data['shipping_costs'] = shipping_costs
             instance = Order.objects.create(**validated_data)
+
         quantities = []
+        instance_total_price = instance.shipping_costs
 
         for product_data in products_data:
             product = product_data.pop('product')
-            quantities.append(
-                Quantity(order=instance, product=product, **product_data))
+
+            quantity = Quantity(
+                order=instance, product=product, **product_data)
+            quantities.append(quantity)
+
+            instance_total_price += product.price * quantity.quantity
+
+        instance.total_price = instance_total_price
+        instance.save()
 
         return instance, quantities
 
     def _update_instance(self, instance, validated_data):
         for key, value in validated_data.items():
             setattr(instance, key, value)
+
         instance.save()
