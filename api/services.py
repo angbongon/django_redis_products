@@ -3,12 +3,15 @@ import requests
 from datetime import timedelta
 
 from django.conf import settings
+from django.utils.crypto import get_random_string
 
 from api.models import Order, Quantity
 
 
 class OrderService:
     def create(self, validated_data):
+        validated_data['tracking_number'] = self.token = get_random_string(
+            length=15).upper()
         instance, quantities = self._update_instance_related(validated_data)
 
         Quantity.objects.bulk_create(quantities)
