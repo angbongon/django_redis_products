@@ -20,3 +20,13 @@ After having our docker image created the next thing is to migrate our Django mo
 
 ## Running the app
 In order to run the app we can run the following command `$ docker-compose up`. The local server will be hosted in http://0.0.0.0:8000.
+
+## Test users credentials
+| username  | password |
+| --------- | -------- |
+| superuser | superuser|
+| user      | user     |
+
+## API Docs
+The API documentantion can be acccessed in the [/api/docs]() url.
+
