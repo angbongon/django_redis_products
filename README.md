@@ -19,7 +19,7 @@ Inside **api/** we have the:
 The we run the following command `$ docker-compose build`.
 
 ## Setting up Django
-After having our docker image created the next thing is to migrate our Django models to the database. To do that we run `$ docker-compose run products python manage.py migrate`. Then we create a superuser for Django: `$ docker-compose run cars python manage.py createsuperuser`.
+After having our docker image created the next thing is to migrate our Django models to the database. To do that we run `$ docker-compose run products python manage.py migrate`. Then we create a superuser for Django: `$ docker-compose run products python manage.py createsuperuser`.
 
 ## Running the app
 In order to run the app we can run the following command `$ docker-compose up`. The local server will be hosted in http://0.0.0.0:8000.
