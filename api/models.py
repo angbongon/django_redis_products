@@ -1,9 +1,8 @@
-import uuid
-
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.deletion import CASCADE
-from django.db.models.fields import CharField, DecimalField, TextField, UUIDField
+from django.db.models.fields import CharField, FloatField, TextField
+from django.utils.crypto import get_random_string
 
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 
@@ -12,7 +11,7 @@ User = get_user_model()
 
 class Product(models.Model):
     name = CharField('Name', max_length=250)
-    price = DecimalField('Price', max_digits=10, decimal_places=2)
+    price = FloatField('Price')
     description = TextField('Description', null=True, blank=True)
 
     class Meta:
@@ -20,19 +19,24 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    tracking_number = UUIDField(
-        'Tracking number', default=uuid.uuid4, editable=False)
+    tracking_number = CharField(
+        'Tracking number', max_length=15, editable=False)
     address = CharField(max_length=250)
-    shipping_costs = DecimalField(
-        'Shipping costs', max_digits=10, decimal_places=2, default=0.00)
+    shipping_costs = FloatField('Shipping costs', default=0.00, editable=False)
+    total_price = FloatField('Total price', default=0.00, editable=False)
 
     user = models.ForeignKey(User, related_name='orders',
                              editable=False, on_delete=CASCADE)
     products = models.ManyToManyField(
-        Product, through='Quantity', related_name='orders', blank=True)
+        Product, through='Quantity', related_name='orders')
 
     class Meta:
         ordering = ['tracking_number', 'shipping_costs']
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.token = get_random_string(length=15).upper()
+        super(Order, self).save(*args, **kwargs)
 
 
 class Quantity(models.Model):
