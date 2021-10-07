@@ -10,7 +10,9 @@ services:
       - SHIPPING_COSTS_URL=https://random.api.randomkey.io/v1/double
       - SHIPPING_COSTS_KEY=96aac0784de8fc3aed39c0daffc5f8ed
       - REDIS_DB=0
+      - REDIS_DEFAULT_TTL=10
       - REDIS_HOST=redis
+      - REDIS_LOCATION=redis://redis:6379/0
       - REDIS_PORT=6379
     depends_on:
       - redis
