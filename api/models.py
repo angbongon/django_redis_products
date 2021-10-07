@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.deletion import CASCADE
 from django.db.models.fields import CharField, FloatField, TextField
-from django.utils.crypto import get_random_string
 
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 
@@ -32,11 +31,6 @@ class Order(models.Model):
 
     class Meta:
         ordering = ['tracking_number', 'shipping_costs']
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.token = get_random_string(length=15).upper()
-        super(Order, self).save(*args, **kwargs)
 
 
 class Quantity(models.Model):
